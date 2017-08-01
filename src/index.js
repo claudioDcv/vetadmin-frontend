@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/css/style.css';
 import registerServiceWorker from './registerServiceWorker';
 import { Provider } from 'react-redux'

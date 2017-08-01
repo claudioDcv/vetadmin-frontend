@@ -1,6 +1,15 @@
 html{
   font-family: sans-serif;
   body{
-    color: red;
+    color: #000000;
+    button{
+
+     &:hover{
+
+     }
+      &[disabled]{
+
+      }
+    }
   }
 }
