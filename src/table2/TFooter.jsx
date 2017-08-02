@@ -16,12 +16,12 @@ class TFooter extends Component {
           <tfoot>
             <tr>
               <td colSpan={state.columns.length + (state.config.table.thead.actions ? 1 : 0)}>
-                {state.paginator.pages === 1 ? undefined : (
+                {state.paginator.pages > 1 ? (
                   <Paginator
                     tableState={this.props.tableState}
                     updateState={this.props.updateState}
                   />
-                )}
+                ) : undefined}
               </td>
             </tr>
           </tfoot>

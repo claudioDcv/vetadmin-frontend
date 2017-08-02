@@ -11,6 +11,7 @@ const initialState = {
   isDecrementing: false
 }
 
+
 export default (state = initialState, action) => {
   switch (action.type) {
     case INCREMENT_REQUESTED:

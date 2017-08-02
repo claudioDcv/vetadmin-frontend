@@ -39,12 +39,14 @@ class Table2 extends Component {
         columns: props.config.columns,
         paginator: {},
         inputSearch: {},
+        ajaxError: false,
       };
       this.updateState = this.updateState.bind(this);
       this.ajaxGotoPage = this.ajaxGotoPage.bind(this);
       this.initialState = this.initialState.bind(this);
       this.updateQueryStringOut = this.updateQueryStringOut.bind(this);
       this.handlerInputSearch = this.handlerInputSearch.bind(this);
+      this.resetToInitialState = this.resetToInitialState.bind(this);
       if (errorInitialTable(props)) {
         this.init();
       }
@@ -111,12 +113,16 @@ class Table2 extends Component {
       }
     }
     updateQueryStringOut(cb){
-      const o = cb(this.state.paginator);
-      let url = this.state.paginator.actual;
-      for (const v in o) {
-        if (o.hasOwnProperty(v)) {
-          console.log(v, o[v]);
-          url = updateQueryStringParameter(url, v, o[v]);
+      let url = this.state.initiaAjax.url;
+      if (typeof cb === 'function') {
+        const o = cb(this.state.paginator);
+        if (o) {
+          for (const v in o) {
+            if (o.hasOwnProperty(v)) {
+              console.log(v, o[v]);
+              url = updateQueryStringParameter(url, v, o[v]);
+            }
+          }
         }
       }
       this.setState({inputSearch: {} });
@@ -150,18 +156,30 @@ class Table2 extends Component {
     // AJAX
     ajax() {
       const cbResponse = (dataset, response, opt) => {
-        if (this.state.config.cbAfterSend) {
-          this.state.config.cbAfterSend(dataset);
+        if (this.state.config.onAfterSend) {
+          this.state.config.onAfterSend(dataset);
         }
         this.setStateService(dataset, response, opt);
       }
       this.ajaxConector(this.state.config.ajax, cbResponse);
     }
     ajaxConector(config, cb) {
-      if (this.state.config.cbBeforeSend) {
-        this.state.config.cbBeforeSend(config);
+      if (this.state.config.onBeforeSend) {
+        this.state.config.onBeforeSend(config);
       }
-      ajax(config, cb);
+      const headers = this.props.config.ajax.liveHeaders();
+      const ecb = (e) => {
+        this.setState({ajaxError: true },this.state.config.errors.onAjaxError(e));
+      };
+      const nonErrorAjax = () => {
+        this.setState({ajaxError: false });
+      };
+      config.headers = {
+        ...config.headers,
+        ...headers,
+      };
+      delete config.liveHeaders;
+      ajax(config, cb, ecb, nonErrorAjax);
     }
     setStateService(dataset, response, opt) {
       const currentUrl = this.state.initiaAjax.url;
@@ -169,6 +187,12 @@ class Table2 extends Component {
         dataset,
         paginator: makePaginator(dataset, currentUrl, response, opt)
       });
+    }
+    resetToInitialState() {
+      if (this.state.config.table.resetButton.onReset) {
+        this.state.config.table.resetButton.onReset();
+      }
+      this.initialState();
     }
     initialState() {
       const initiaAjax = this.state.initiaAjax;
@@ -190,12 +214,15 @@ class Table2 extends Component {
       this.ajax();
     }
     render() {
+        if (this.state.ajaxError) {
+          return <div />;
+        }
         return (
           <div>
             {this.state.config.table.resetButton ?
             (<button
-              onClick={this.initialState}
-              className={this.state.config.table.resetButton.className}
+              onClick={this.resetToInitialState}
+              className={`table2-btn-reset ${this.state.config.table.resetButton.className}`}
             >{this.state.config.table.resetButton.title}</button>) : undefined}
             <table className={`table-2-new ${this.state.config.table.className}`}>
               <THead
