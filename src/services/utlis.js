@@ -43,7 +43,6 @@ const callback = (data, base) => {
     paginator.limit = service.results.length;
   }
 
-  console.log(paginator);
 };
 
 export const start = () => {
