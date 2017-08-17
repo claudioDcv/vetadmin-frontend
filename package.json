@@ -20,7 +20,7 @@
     "react-select": "^1.0.0-rc.5",
     "redux": "^3.7.2",
     "redux-thunk": "^2.2.0",
-    "tabl3": "^1.0.21"
+    "tabl3": "^1.0.23"
   },
   "scripts": {
     "start": "react-scripts start",

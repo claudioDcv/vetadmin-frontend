@@ -19,6 +19,13 @@ const ajax = (opt, callback, errorCallback, nonErrorAjax, onAfterSend) => {
 export default () => (
   <div>
     <h1>About Us</h1>
+    <button onClick={() => {
+      this.table.updateQueryStringOut(() => ({
+        limit: 1,
+        offset: 1,
+      }));
+    }}
+    >Click</button>
     <p>Hello Medium!</p>
     <Table2
       ref={(e) => { this.table = e; }}
@@ -38,6 +45,9 @@ export default () => (
         },
         onBeforeSend: (e) => { console.log(e); },
         onAfterSend: (e) => { console.log(e); },
+        errors: {
+          onAjaxError: (e) => { console.log(e); },
+        },
         table: {
           className: 'table table-hover table-sm',
           resetButton: {
